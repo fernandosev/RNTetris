@@ -1,7 +1,8 @@
 import React from 'react';
 import {
     View,
-    StyleSheet
+    StyleSheet,
+    Dimensions
 } from 'react-native';
 
 import Cell from './Cell';
@@ -30,8 +31,8 @@ export default function Grid({grid}) {
 
 const styles = StyleSheet.create({
     container: {
-        width: 300,
-        height: 600,
+        width: Dimensions.get('screen').width,
+        height: Dimensions.get('screen').width*1.8,
         flexDirection: 'row',
         flexWrap: 'wrap'
     }
