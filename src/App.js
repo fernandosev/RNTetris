@@ -64,8 +64,6 @@ export default function App() {
                         [null, null, null, null, null, null, null, null, null, null],
                         [null, null, null, null, null, null, null, null, null, null],
                         [null, null, null, null, null, null, null, null, null, null],
-                        [null, null, null, null, null, null, null, null, null, null],
-                        [null, null, null, null, null, null, null, null, null, null],
                         [null, null, null, null, null, null, null, null, null, null]
                     ], 
                     //Velocidade do jogo

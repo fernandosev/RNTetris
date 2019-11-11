@@ -1,7 +1,8 @@
 import React, { PureComponent } from "react";
 import {
     View,
-    Image
+    Image,
+    Dimensions
 } from "react-native";
 
 import green from './../assets/green.png';
@@ -53,7 +54,7 @@ export default class Cell extends PureComponent{
 
         return (
             <View>
-                <Image source={color(this.props.color)} style={{ width: 30, height: 30}} />
+                <Image source={color(this.props.color)} style={{ width: Dimensions.get('screen').width/10, height: Dimensions.get('screen').width/10}} />
             </View>
         );
     }
