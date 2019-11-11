@@ -1,27 +1,20 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import {
     View,
     StyleSheet,
     StatusBar,
-    TouchableOpacity,
+    Alert,
     Text,
-    Alert
+    TouchableOpacity,
+    Dimensions
 } from 'react-native';
+
+import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
 
 import { GameEngine } from 'react-native-game-engine';
 import { GameLoop } from "./Systems";
 
-import { CurrentPiece } from './Components/CurrentPiece';
-import { Construction } from './Components/Construction';
-
-import Constants from './Constants';
-
-import Pieces from './Pieces';
-
-const randomBetween = (min, max) => {
-    let x = Math.floor(Math.random() * (max - min + 1) + min);
-    return x;
-}
+import Grid from './Components/Grid';
 
 export default function App() {
     const[running, setRunning] = useState(true);
@@ -34,36 +27,63 @@ export default function App() {
         }
     }
 
+    const config = {
+        velocityThreshold: 0.3,
+        directionalOffsetThreshold: 80
+    };
+
     return(
-        <View style={styles.container}>
-            <GameEngine
+        <GestureRecognizer
+            onSwipeUp={() => engine.dispatch({ type: "rotate" })}
+            onSwipeDown={() => engine.dispatch({ type: "slide" })}
+            config={config}
+            style={{flex: 1}}>
+            <View style={styles.container}>
+                <StatusBar hidden={true}/>
+                
+                <GameEngine 
                 ref={(ref) => { engine = ref; }}
                 style={styles.gameEngine}
                 systems={[ GameLoop ]}
                 entities={{
-                    currentPiece: { position: Pieces[randomBetween(0, 6)], xspeed: 0, yspeed: 1, nextMove: Constants.GAME_SPEED, updateFrequency: Constants.GAME_SPEED, size: Constants.CELL_LENGTH, renderer: <CurrentPiece />},
-                    construction: { position: [], size: Constants.CELL_LENGTH, renderer: <Construction />}
+                    grid: {grid: [
+                        [null, null, null, null, null, null, null, null, null, null],
+                        [null, null, null, null, null, null, null, null, null, null],
+                        [null, null, null, null, null, null, null, null, null, null],
+                        [null, null, null, null, null, null, null, null, null, null],
+                        [null, null, null, null, null, null, null, null, null, null],
+                        [null, null, null, null, null, null, null, null, null, null],
+                        [null, null, null, null, null, null, null, null, null, null],
+                        [null, null, null, null, null, null, null, null, null, null],
+                        [null, null, null, null, null, null, null, null, null, null],
+                        [null, null, null, null, null, null, null, null, null, null],
+                        [null, null, null, null, null, null, null, null, null, null],
+                        [null, null, null, null, null, null, null, null, null, null],
+                        [null, null, null, null, null, null, null, null, null, null],
+                        [null, null, null, null, null, null, null, null, null, null],
+                        [null, null, null, null, null, null, null, null, null, null],
+                        [null, null, null, null, null, null, null, null, null, null],
+                        [null, null, null, null, null, null, null, null, null, null],
+                        [null, null, null, null, null, null, null, null, null, null],
+                        [null, null, null, null, null, null, null, null, null, null],
+                        [null, null, null, null, null, null, null, null, null, null]
+                    ], 
+                    //Velocidade do jogo
+                    nextMove: 20, 
+                    updateFrequency: 20,
+                    //Conponente rederizado
+                    renderer: <Grid/>}
                 }}
-                onEvent={onEvent}
-                running={running}>
+                running={running}
+                onEvent={onEvent}/>
 
-                <StatusBar hidden={true}/>
-            </GameEngine>
+                <View style={styles.buttons}>
+                    <TouchableOpacity style={styles.button} onPress={() => { engine.dispatch({ type: "move-left" })} }/>
+                    <TouchableOpacity style={styles.button} onPress={() => { engine.dispatch({ type: "move-right" })} }/>
+                </View>
 
-            <View style={styles.buttons}>
-                <TouchableOpacity style={styles.button} onPress={() => { engine.dispatch({ type: "move-left" })} }>
-                    <Text>LEFT</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.button} onPress={() => { engine.dispatch({ type: "move-right" })} }>
-                    <Text>RIGHT</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.button} onPress={() => { engine.dispatch({ type: "rotate" })} }>
-                    <Text>ROTATE</Text>
-                </TouchableOpacity>
             </View>
-        </View>
+        </GestureRecognizer>
     );
 }
 
@@ -77,10 +97,9 @@ const styles = StyleSheet.create({
     },
 
     gameEngine: {
-        width: Constants.MAX_WIDTH, 
-        height: Constants.MAX_HEIGHT, 
-        backgroundColor: '#ffffff', 
-        flex: null
+        //position: 'absolute',
+        //bottom: 0,
+        backgroundColor: 'red'
     },
 
     buttons: {
@@ -88,7 +107,8 @@ const styles = StyleSheet.create({
     },
 
     button: {
-        padding: 20,
-        backgroundColor: 'green',
+        width: Dimensions.get('screen').width/2,
+        height: Dimensions.get('window').height,
+        backgroundColor: 'rgba(255,255,255, 0)',
     }
 });
