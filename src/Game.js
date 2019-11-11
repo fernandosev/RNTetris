@@ -16,7 +16,7 @@ import { GameLoop } from "./Systems";
 
 import Grid from './Components/Grid';
 
-export default function App() {
+export default function App({navigation}) {
     const[running, setRunning] = useState(true);
     var engine = useRef();
 
@@ -24,6 +24,7 @@ export default function App() {
         if (e.type === "game-over"){
             setRunning(false);
             Alert.alert("Game Over");
+            navigation.navigate('GameMenu');
         }
     }
 
