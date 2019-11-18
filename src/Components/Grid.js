@@ -7,6 +7,8 @@ import {
 
 import Cell from './Cell';
 
+import { WIDTH_SCREEN, HEIGHT_SCREEN } from '../Constants';
+
 export default function Grid({grid}) {
     const cells = () => {
         let finalCells = [];
@@ -31,8 +33,8 @@ export default function Grid({grid}) {
 
 const styles = StyleSheet.create({
     container: {
-        width: Dimensions.get('screen').width,
-        height: Dimensions.get('screen').width*1.8,
+        width: WIDTH_SCREEN,
+        height: HEIGHT_SCREEN,
         flexDirection: 'row',
         flexWrap: 'wrap'
     }

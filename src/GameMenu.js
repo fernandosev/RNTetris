@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     SafeAreaView,
     View,
     Text,
     TouchableOpacity,
     StyleSheet,
-    Image
+    Image,
+    AsyncStorage
 } from 'react-native';
 
 //animacoes
@@ -13,16 +14,39 @@ import * as Animatable from 'react-native-animatable';
 
 import logo from './assets/logo.png';
 
+import BestScores from './Components/BestScores';
+
 export default function GameMenu({navigation}){
+    const[gameOver, setGameOver] = useState(true);
+    const[bestScores, setBestScores] = useState(null);
+
+    useEffect(() => {
+        async function scores(){
+            try{
+                let data = await AsyncStorage.getItem('Best_Scores')
+                setBestScores(JSON.parse(data));
+                setGameOver(false);
+            }catch(e){
+                console.log(e);
+            }
+        }
+
+        if(gameOver == true){
+            scores();
+        }
+    }, [gameOver]);
+
     return(
         <SafeAreaView style={styles.container}>
             <Image source={logo} style={styles.logo}/>
 
             <Animatable.View animation="rubberBand" easing="ease-out" iterationCount="infinite">
-                <TouchableOpacity style={styles.btnStart} onPress={() => navigation.navigate('Game')}>
+                <TouchableOpacity style={styles.btnStart} onPress={() => navigation.navigate('Game', { setGameOver })}>
                     <Text style={styles.txtBtnStart}>Start</Text>
                 </TouchableOpacity>
             </Animatable.View>
+
+            <BestScores data={bestScores}></BestScores>
         </SafeAreaView>
     )
 }

@@ -4,7 +4,7 @@ import {
     StyleSheet,
     StatusBar,
     Alert,
-    Text,
+    SafeAreaView,
     TouchableOpacity,
     Dimensions
 } from 'react-native';
@@ -16,15 +16,48 @@ import { GameLoop } from "./Systems";
 
 import Grid from './Components/Grid';
 
+import {
+    NUMBER_OF_CELLS_HORIZONTAL,
+    NUMBER_OF_CELLS_VERTICAL,
+    GAME_SPEED
+} from './Constants';
+
+import { addScore } from './Data/score';
+
+import Score from './Components/Score';
+
 export default function App({navigation}) {
     const[running, setRunning] = useState(true);
+    const[score, setScore] = useState(0);
     var engine = useRef();
 
-    const onEvent = (e) => {
+    const renderGrid = () => {
+        let grid = [];
+
+        for(i=0; i<NUMBER_OF_CELLS_VERTICAL; i++){
+            grid[i] = [];
+            for(j=0; j<NUMBER_OF_CELLS_HORIZONTAL; j++){
+                grid[i][j] = null;
+            }
+        }
+
+        return grid;
+    }
+
+    const onEvent = async (e) => {
         if (e.type === "game-over"){
             setRunning(false);
+            
+            if(score > 0){
+                await addScore(score);
+                let gameMenuFunction = navigation.getParam('setGameOver');
+                gameMenuFunction(true);
+            }
+
             Alert.alert("Game Over");
             navigation.navigate('GameMenu');
+        }else if(e.type === "add-score"){
+            setScore(score + e.score);
         }
     }
 
@@ -34,42 +67,28 @@ export default function App({navigation}) {
     };
 
     return(
-        <GestureRecognizer
-            onSwipeUp={() => engine.dispatch({ type: "rotate" })}
-            onSwipeDown={() => engine.dispatch({ type: "slide" })}
-            config={config}
-            style={{flex: 1}}>
-            <View style={styles.container}>
+            <SafeAreaView style={styles.container}>
+                <GestureRecognizer
+                    onSwipeUp={() => engine.dispatch({ type: "rotate" })}
+                    onSwipeDown={() => engine.dispatch({ type: "slide" })}
+                    onSwipeLeft={() => engine.dispatch({ type: "move-left" })}
+                    onSwipeRight={() => engine.dispatch({ type: "move-right" })}
+                    config={config}
+                    style={{flex: 1}}>
+
                 <StatusBar hidden={true}/>
                 
+                <Score score={score}/>
+
                 <GameEngine 
                 ref={(ref) => { engine = ref; }}
                 style={styles.gameEngine}
                 systems={[ GameLoop ]}
                 entities={{
-                    grid: {grid: [
-                        [null, null, null, null, null, null, null, null, null, null],
-                        [null, null, null, null, null, null, null, null, null, null],
-                        [null, null, null, null, null, null, null, null, null, null],
-                        [null, null, null, null, null, null, null, null, null, null],
-                        [null, null, null, null, null, null, null, null, null, null],
-                        [null, null, null, null, null, null, null, null, null, null],
-                        [null, null, null, null, null, null, null, null, null, null],
-                        [null, null, null, null, null, null, null, null, null, null],
-                        [null, null, null, null, null, null, null, null, null, null],
-                        [null, null, null, null, null, null, null, null, null, null],
-                        [null, null, null, null, null, null, null, null, null, null],
-                        [null, null, null, null, null, null, null, null, null, null],
-                        [null, null, null, null, null, null, null, null, null, null],
-                        [null, null, null, null, null, null, null, null, null, null],
-                        [null, null, null, null, null, null, null, null, null, null],
-                        [null, null, null, null, null, null, null, null, null, null],
-                        [null, null, null, null, null, null, null, null, null, null],
-                        [null, null, null, null, null, null, null, null, null, null]
-                    ], 
+                    grid: {grid: renderGrid(), 
                     //Velocidade do jogo
-                    nextMove: 20, 
-                    updateFrequency: 20,
+                    nextMove: GAME_SPEED, 
+                    updateFrequency: GAME_SPEED,
                     //Conponente rederizado
                     renderer: <Grid/>}
                 }}
@@ -81,8 +100,8 @@ export default function App({navigation}) {
                     <TouchableOpacity style={styles.button} onPress={() => { engine.dispatch({ type: "move-right" })} }/>
                 </View>
 
-            </View>
-        </GestureRecognizer>
+                </GestureRecognizer>
+            </SafeAreaView>
     );
 }
 
@@ -90,15 +109,9 @@ export default function App({navigation}) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#000000',
+        backgroundColor: '#FFF',
         alignItems: 'center',
         justifyContent: 'center'
-    },
-
-    gameEngine: {
-        //position: 'absolute',
-        //bottom: 0,
-        backgroundColor: 'red'
     },
 
     buttons: {

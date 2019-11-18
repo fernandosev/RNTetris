@@ -14,6 +14,8 @@ import red from './../assets/red.png';
 import yellow from './../assets/yellow.png';
 import gray from './../assets/gray.png';
 
+import { CELL_LENGTH } from '../Constants';
+
 export default class Cell extends PureComponent{
     render(){
         const color = (c) => {
@@ -54,7 +56,7 @@ export default class Cell extends PureComponent{
 
         return (
             <View>
-                <Image source={color(this.props.color)} style={{ width: Dimensions.get('screen').width/10, height: Dimensions.get('screen').width/10}} />
+                <Image source={color(this.props.color)} style={{ width: CELL_LENGTH, height: CELL_LENGTH}} />
             </View>
         );
     }
