@@ -11,8 +11,15 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "splash": {
+      "image": "./src/assets/imgSplashScreen.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#006400"
+    },
+    "ios": {
+      "bundleIdentifier": "com.rn.tetris"
+    },
+    "android": {
+      "package": "com.rn.tetris"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
